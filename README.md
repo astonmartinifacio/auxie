@@ -32,21 +32,12 @@ Auxie runs on **Qwen3-1.7B, a small open model** we fine-tuned to do one job wel
 ## How it works
 
 ```mermaid
-flowchart TB
-    subgraph DECIDE["Decide (every few minutes)"]
-        direction LR
-        A["Passive context<br/>time · speed · place<br/>calendar · weather · skips"] --> B["Qwen3-1.7B<br/>fine-tuned (SFT + DPO)"]
-        B --> C["Vibe spec (JSON)<br/>energy · valence · BPM · tags"]
-        C --> D["Selector picks from<br/>your tagged library"]
-        D --> E["Queued on<br/>Spotify"]
-    end
-    subgraph LEARN["Learn (continuously)"]
-        direction RL
-        F["Skips & full plays<br/>logged with context"] --> G["Preference<br/>pairs"]
-        G --> H["DPO<br/>retrain"]
-    end
-    E --> F
-    H -.->|"updated model"| B
+flowchart LR
+    A["Passive context<br/>time · place · speed<br/>calendar · weather"] --> B["Qwen3-1.7B<br/>SFT + DPO"]
+    B --> C["Vibe spec<br/>energy · BPM · tags"]
+    C --> D["Spotify<br/>queue"]
+    D --> E["Skips &<br/>full plays"]
+    E -->|"preference pairs, DPO retrain"| B
 ```
 
 A real example from the training data, showing what the model sees and what it returns:
