@@ -1,0 +1,24 @@
+# Veri local state
+.veri/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Data
+datasets/*.jsonl
+datasets/*.parquet
+
+# Editor
+.vscode/
+.idea/
+
+.env
+checkpoints/
+data/audio/
+*.mp3
+
+# Aux local state
+.tokens.json
+data/play_log.jsonl
