@@ -22,7 +22,7 @@ Two things make this hard to fix with a big AI model:
 
 Auxie runs on **Qwen3-1.7B, a small open model** we fine-tuned to do one job well. It is small enough to run on a laptop and costs a fraction of a frontier API per call.
 
-| | |
+| Advantage | Why it matters |
 |---|---|
 | 🔒 **Private by design** | A 1.7B model can run on-device, so personal context never has to leave your machine |
 | ⚡ **Fast and cheap** | ~1.7× lower latency than the frontier teacher model; under $1 of GPU time per training run |
@@ -32,15 +32,21 @@ Auxie runs on **Qwen3-1.7B, a small open model** we fine-tuned to do one job wel
 ## How it works
 
 ```mermaid
-flowchart LR
-    A["Passive context<br/>time · GPS speed · place<br/>calendar load · weather<br/>recent skips"] --> B["Prompt<br/>builder"]
-    B --> C["Qwen3-1.7B<br/>(SFT + DPO)"]
-    C --> D["Vibe spec (JSON)<br/>energy · valence · BPM<br/>tags · DJ line"]
-    D --> E["Selector<br/>scores your<br/>tagged library"]
-    E --> F["Spotify<br/>queue"]
-    F --> G["Skips &<br/>full plays logged"]
-    G --> H["Preference<br/>pairs"]
-    H -->|"DPO retrain"| C
+flowchart TB
+    subgraph DECIDE["Decide (every few minutes)"]
+        direction LR
+        A["Passive context<br/>time · speed · place<br/>calendar · weather · skips"] --> B["Qwen3-1.7B<br/>fine-tuned (SFT + DPO)"]
+        B --> C["Vibe spec (JSON)<br/>energy · valence · BPM · tags"]
+        C --> D["Selector picks from<br/>your tagged library"]
+        D --> E["Queued on<br/>Spotify"]
+    end
+    subgraph LEARN["Learn (continuously)"]
+        direction RL
+        F["Skips & full plays<br/>logged with context"] --> G["Preference<br/>pairs"]
+        G --> H["DPO<br/>retrain"]
+    end
+    E --> F
+    H -.->|"updated model"| B
 ```
 
 A real example from the training data, showing what the model sees and what it returns:
